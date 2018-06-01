@@ -1,6 +1,7 @@
 var epi
 var allCharacters = []
 corrMatrix = []
+charQuant = 50
 
 // to convert scene start/end times into seconds
 function toSecs(timeString){
@@ -45,12 +46,12 @@ d3.json("https://raw.githubusercontent.com/jeffreylancaster/game-of-thrones/mast
   }
   allCharacters = allCharacters.sort(compareTime)
 
-  for (var a = 0; a < 50; a++) {
+  for (var a = 0; a < charQuant; a++) {
     var arr = []
-    arr.length = 50;
+    arr.length = charQuant;
     arr.fill(0)
     corrMatrix.push(arr)
-    for (var b = 0; b < 50; b++) {
+    for (var b = 0; b < charQuant; b++) {
       for (var i = 0; i < epi.length; i++) {
         epiScenes = epi[i].scenes
         for (var j = 0; j < epiScenes.length; j++) {
