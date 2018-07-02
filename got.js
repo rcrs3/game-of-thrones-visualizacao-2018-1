@@ -93,8 +93,6 @@ function clusters(matrix, clustNumber){
     }
     value0 = myclusters[ind0]
     value1 = myclusters[ind1]
-    console.log(value0)
-    console.log(value1)
     for (var k = 0; k < myclusters.length; k++) {
       for (var l = 0; l < myclusters.length; l++) {
         if (myclusters[k] == value0) {
@@ -146,8 +144,6 @@ d3.json("https://raw.githubusercontent.com/jeffreylancaster/game-of-thrones/mast
     desiredCharacters.push(allCharacters[i])
   }
 
-console.log(desiredCharacters);
-
 for (var a = 0; a < charQuant; a++) {
   var arr = []
   arr.length = charQuant;
@@ -180,8 +176,6 @@ for (var i = 0; i < charQuant; i++) {
     corrArray.push(corrMatrix[i][j])
   }
 }
-
-console.log(corrMatrix);
 
 var cellsGroup = canvasMatrix.append("g").attr("id", "cellsGroup")
 var rowTextsGroup = canvasMatrix.append("g").attr("id", "rowTextsGroup")
