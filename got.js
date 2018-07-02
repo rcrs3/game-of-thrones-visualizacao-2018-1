@@ -107,33 +107,49 @@ var cellsGroup = canvasMatrix.append("g").attr("id", "cellsGroup")
 var rowTextsGroup = canvasMatrix.append("g").attr("id", "rowTextsGroup")
 var columnTextsGroup = canvasMatrix.append("g").attr("id", "columnTextsGroup")
 
+var colorScaleMatrix = d3.scaleLinear()
+               .domain([0,50,500,4000,8000,20000,corrArray[0]])
+               .range(['white','#f7fbff','#c6dbef','#6baed6','#2171b5','#08519c','#08306b']);
+
 var matrixCells = canvasMatrix.select("#cellsGroup").selectAll("rect").data(corrArray).enter()
                               .append("rect")
                               .attr("x", function (d, index) { return xScaleMatrix(index % charQuant); })
                               .attr("y", function (d, index) { return heightMatrix + margin.top - yScaleMatrix(Math.floor(index/charQuant));})
                               .attr("width", function (d, index) { return xScaleMatrix(index+1) - xScaleMatrix(index); })
                               .attr("height", function (d, index) { return yScaleMatrix(index) - yScaleMatrix(index+1); })
-                              .attr("fill", "Navy")
-                              .attr("fill-opacity", function(d, index){
-                                return Math.sqrt(d/corrArray[0])
-                                  //criar um scale de cor apropriado depois
+                              .attr("fill", function(d){
+                                return colorScaleMatrix(d)
                               })
+                              // .attr("fill-opacity", function(d, index){
+                              //   return Math.sqrt(d/corrArray[0])
+                              // })
                               .attr("stroke", "black")
                               .attr("stroke-width", 0.7)
+                              .on("mouseover", function(d, index){
+                                d3.select(this).style("cursor", "pointer");
+                                d3.select("#columnTextsGroup").selectAll("text").style('fill', function(d2, index2){
+                                  if(index2==(index%charQuant)) return "red"
+                                  else return "black"
+                                })
+                                d3.select("#rowTextsGroup").selectAll("text").style('fill', function(d2, index2){
+                                  if(index2==(Math.floor(index/charQuant))) return "red"
+                                  else return "black"
+                                })
+                              })
                               .on("click", function(d, i) {
                                 //Cria diagrama de venn com os personagens selecionados
-                                
+
                                 var char1 = desiredCharacters[i%charQuant];
                                 var char2 = desiredCharacters[Math.floor(i/charQuant)];
 
                                 var sets = [{sets: [char1.name], size: char1.screenTime},
                                             {sets: [char2.name], size: char2.screenTime},
                                             {sets: [char1.name, char2.name], size: corrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
-                                
+
                                 var chart = venn.VennDiagram();
-                                
+
                                 canvasVenn.datum(sets).call(chart);
-                                
+
                                 showSceneTime(canvasVenn);
                               });
 
@@ -143,7 +159,7 @@ var rowTexts = canvasMatrix.select("#rowTextsGroup").selectAll("text").data(desi
                             .attr("y", function (d, index) {return heightMatrix + margin.top - yScaleMatrix(index+1);})
                             .text( function (d) { return d.name; })
                             .style("fill", "black")
-                            .attr("font-size", "16px")
+                            .attr("font-size", "14px")
                             .style("alignment-baseline", "ideographic")
                             .style("text-anchor", "end")
 
@@ -153,7 +169,7 @@ var columnTexts = canvasMatrix.select("#columnTextsGroup").selectAll("text").dat
                             .attr("y", margin.top)
                             .text( function (d) { return d.name; })
                             .style("fill", "black")
-                            .attr("font-size", "16px")
+                            .attr("font-size", "14px")
                             .style("alignment-baseline", "ideographic")
                             .attr('transform', function(d, index) {
                               return 'translate( '+
@@ -165,14 +181,14 @@ var columnTexts = canvasMatrix.select("#columnTextsGroup").selectAll("text").dat
 });
 
 //Mostra o tempo de cena que cada circulo representa ao passar o mouse pelo circulo
-function showSceneTime(canvasVenn) { 
+function showSceneTime(canvasVenn) {
   var tooltip = d3.select("body").append("div").attr("class", "venntooltip");
-  
+
   canvasVenn.selectAll("path")
     .style("stroke-opacity", 0)
     .style("stroke", "black")
     .style("stroke-width", 3)
-  
+
   var vennGroups = canvasVenn.selectAll("g");
 
   vennGroups
@@ -181,8 +197,8 @@ function showSceneTime(canvasVenn) {
         venn.sortAreas(canvasVenn, d);
 
         tooltip.transition().duration(400).style("opacity", .9);
-        tooltip.text(d.size + " seconds");
-        
+        tooltip.text((d.size/60).toFixed(2) + " minutes");
+
         var selection = d3.select(this).transition("tooltip").duration(400);
         selection.select("path")
             .style("stroke-width", 3)
@@ -202,37 +218,3 @@ function showSceneTime(canvasVenn) {
             .style("stroke-opacity", 0);
     });
 }
-// var matrixCells = canvasMatrix.selectAll("rect").data(corrMatrix).enter()
-//                              .append("rect")
-//                              .attr("x", function (d, index) { return xScaleMatrix(index); })
-//                              .attr("y", function (d, index) { return yScaleMatrix(index); })
-//                              .attr("width", function (d, index) { return xScaleMatrix(index+1) - xScaleMatrix(index); })
-//                              .attr("height", function (d) { return yScaleMatrix(index+1) - yScaleMatrix(index); })
-//                              .attr("stroke", "black")
-//                              .attr("stroke-width", 0.5)
-//                              .attr("active", 1)
-//                              .attr("opacity", 1)
-//                              .style("fill", function (d) {
-//                                if (d.Company === "Gol"){
-//                                  return "orange"
-//                                }
-//                                else if (d.Company === "Tam") {
-//                                  return "red"
-//                                }
-//
-//                                else if (d.Company === "Azul") {
-//                                  return "blue"
-//                                }
-//
-//                                else {
-//                                  return "black"
-//                                }
-//                              })
-//                              .on("click", function(){
-//                                var isOn = d3.select(this).attr("active")
-//                                if (isOn == 1) newOpacity = 0.1
-//                                else newOpacity = 1
-//                                d3.select(this).attr("opacity", newOpacity)
-//                                               .attr("active", Math.floor(newOpacity))
-//                                updateScatPlot(d3.select(this).attr("company"), newOpacity)
-//                              });
