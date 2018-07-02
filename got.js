@@ -35,6 +35,86 @@ function compareTime(a,b) {
   return 0;
 }
 
+function distance(arr1, arr2){
+  som = 0
+  for (var i = 0; i < arr1.length; i++) {
+    som += (arr1[i] - arr2[i])**2
+  }
+
+  return Math.sqrt(som)
+}
+
+function calcDists(matrix) {
+  distMatrix = []
+  for (var i = 0; i < matrix.length; i++) {
+    idist = []
+    for (var j = 0; j < matrix.length; j++) {
+      idist.push(distance(matrix[i],matrix[j]))
+    }
+    distMatrix.push(idist)
+  }
+  return distMatrix
+}
+
+function getMin(matrix){
+  minValue = Number.MAX_SAFE_INTEGER
+  imin = 0
+  jmin = 0
+  for (var i = 0; i < matrix.length; i++) {
+    for (var j = 0; j < matrix[0].length; j++) {
+      if (matrix[i][j] < minValue) {
+        imin = i
+        jmin = j
+        minValue = matrix[i][j]
+      }
+    }
+  }
+  return [imin, jmin]
+}
+
+function clusters(matrix, clustNumber){
+  var distMatrix = calcDists(matrix)
+  for (var i = 0; i < distMatrix.length; i++) {
+    distMatrix[i][i] = Number.MAX_SAFE_INTEGER
+  }
+
+  myclusters = []
+  for (var i = 0; i < distMatrix.length; i++) {
+    myclusters.push(i)
+  }
+  for (var i = myclusters.length; i > clustNumber; i--) {
+    posMin = getMin(distMatrix)
+    ind0 = posMin[0]
+    ind1 = posMin[1]
+    if (ind1<ind0){
+      indaux = ind0
+      ind0 = ind1
+      ind1 = indaux
+    }
+    value0 = myclusters[ind0]
+    value1 = myclusters[ind1]
+    console.log(value0)
+    console.log(value1)
+    for (var k = 0; k < myclusters.length; k++) {
+      for (var l = 0; l < myclusters.length; l++) {
+        if (myclusters[k] == value0) {
+          if (myclusters[l] == value1){
+            distMatrix[l][k] = Number.MAX_SAFE_INTEGER
+            distMatrix[k][l] = Number.MAX_SAFE_INTEGER
+          }
+        }
+      }
+    }
+    for (var l = 0; l < myclusters.length; l++) {
+      if (myclusters[l] == value1){
+        myclusters[l] = value0
+      }
+    }
+  }
+
+  return myclusters
+
+}
 
 d3.json("https://raw.githubusercontent.com/jeffreylancaster/game-of-thrones/master/data/episodes.json", function(json) {
   epi = json.episodes
@@ -127,14 +207,23 @@ var matrixCells = canvasMatrix.select("#cellsGroup").selectAll("rect").data(corr
                               .attr("stroke-width", 0.7)
                               .on("mouseover", function(d, index){
                                 d3.select(this).style("cursor", "pointer");
-                                d3.select("#columnTextsGroup").selectAll("text").style('fill', function(d2, index2){
-                                  if(index2==(index%charQuant)) return "red"
-                                  else return "black"
+
+                                d3.select("#cellsGroup").selectAll("rect")
+                                .attr("stroke-width", function(d2, index2){
+                                  if(index2==index) return 2.5
+                                  else return 0.7
                                 })
-                                d3.select("#rowTextsGroup").selectAll("text").style('fill', function(d2, index2){
-                                  if(index2==(Math.floor(index/charQuant))) return "red"
-                                  else return "black"
-                                })
+
+                                d3.select("#columnTextsGroup").selectAll("text")
+                                  .style('fill', function(d2, index2){
+                                    if(index2==(index%charQuant)) return "red"
+                                    else return "black"
+                                  })
+                                d3.select("#rowTextsGroup").selectAll("text")
+                                  .style('fill', function(d2, index2){
+                                    if(index2==(Math.floor(index/charQuant))) return "red"
+                                    else return "black"
+                                  })
                               })
                               .on("click", function(d, i) {
                                 //Cria diagrama de venn com os personagens selecionados
