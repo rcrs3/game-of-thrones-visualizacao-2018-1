@@ -151,153 +151,155 @@ function orderClusters(myclusters){
   return orderedClusters
 }
 
-d3.json("https://raw.githubusercontent.com/jeffreylancaster/game-of-thrones/master/data/episodes.json", function(json) {
-  epi = json.episodes
-  for (var i = 0; i < epi.length; i++) {
-    epiScenes = epi[i].scenes
-    for (var j = 0; j < epiScenes.length; j++) {
-      scenesChars = epiScenes[j].characters
-      for (var k = 0; k < scenesChars.length; k++) {
-
-        found = 0
-        for (var l = 0; l < allCharacters.length; l++) {
-          if(scenesChars[k].name == allCharacters[l].name){
-            found = 1
-            allCharacters[l].screenTime += (toSecs(epiScenes[j].sceneEnd) - toSecs(epiScenes[j].sceneStart))
-          }
-        }
-
-        if (found==0) {
-          var chara = {name:scenesChars[k].name, screenTime:(toSecs(epiScenes[j].sceneEnd) - toSecs(epiScenes[j].sceneStart))};
-          allCharacters.push(chara)
-        }
-      }
-    }
-  }
-  allCharacters = allCharacters.sort(compareTime)
-
-  desiredCharacters = []
-  for (var i = 0; i < charQuant; i++) {
-    desiredCharacters.push(allCharacters[i])
-  }
-
-for (var a = 0; a < charQuant; a++) {
-  var arr = []
-  arr.length = charQuant;
-  arr.fill(0)
-  corrMatrix.push(arr)
-  for (var b = 0; b < charQuant; b++) {
+function drawMatrix(charQuant) {
+  d3.json("data/episodes.json", function(json) {
+    epi = json.episodes
     for (var i = 0; i < epi.length; i++) {
       epiScenes = epi[i].scenes
       for (var j = 0; j < epiScenes.length; j++) {
         scenesChars = epiScenes[j].characters
-
         for (var k = 0; k < scenesChars.length; k++) {
-          if(scenesChars[k].name == desiredCharacters[a].name){
-            for (var l = 0; l < scenesChars.length; l++) {
-              if(scenesChars[l].name == desiredCharacters[b].name){
-                corrMatrix[a][b] += (toSecs(epiScenes[j].sceneEnd) - toSecs(epiScenes[j].sceneStart))
+
+          found = 0
+          for (var l = 0; l < allCharacters.length; l++) {
+            if(scenesChars[k].name == allCharacters[l].name){
+              found = 1
+              allCharacters[l].screenTime += (toSecs(epiScenes[j].sceneEnd) - toSecs(epiScenes[j].sceneStart))
+            }
+          }
+
+          if (found==0) {
+            var chara = {name:scenesChars[k].name, screenTime:(toSecs(epiScenes[j].sceneEnd) - toSecs(epiScenes[j].sceneStart))};
+            allCharacters.push(chara)
+          }
+        }
+      }
+    }
+    allCharacters = allCharacters.sort(compareTime)
+
+    desiredCharacters = []
+    for (var i = 0; i < charQuant; i++) {
+      desiredCharacters.push(allCharacters[i])
+    }
+
+  for (var a = 0; a < charQuant; a++) {
+    var arr = []
+    arr.length = charQuant;
+    arr.fill(0)
+    corrMatrix.push(arr)
+    for (var b = 0; b < charQuant; b++) {
+      for (var i = 0; i < epi.length; i++) {
+        epiScenes = epi[i].scenes
+        for (var j = 0; j < epiScenes.length; j++) {
+          scenesChars = epiScenes[j].characters
+
+          for (var k = 0; k < scenesChars.length; k++) {
+            if(scenesChars[k].name == desiredCharacters[a].name){
+              for (var l = 0; l < scenesChars.length; l++) {
+                if(scenesChars[l].name == desiredCharacters[b].name){
+                  corrMatrix[a][b] += (toSecs(epiScenes[j].sceneEnd) - toSecs(epiScenes[j].sceneStart))
+                }
               }
             }
           }
         }
       }
+
     }
-
   }
-}
 
-corrArray = []
-for (var i = 0; i < charQuant; i++) {
-  for (var j = 0; j < charQuant; j++) {
-    corrArray.push(corrMatrix[i][j])
+  corrArray = []
+  for (var i = 0; i < charQuant; i++) {
+    for (var j = 0; j < charQuant; j++) {
+      corrArray.push(corrMatrix[i][j])
+    }
   }
-}
 
-var cellsGroup = canvasMatrix.append("g").attr("id", "cellsGroup")
-var rowTextsGroup = canvasMatrix.append("g").attr("id", "rowTextsGroup")
-var columnTextsGroup = canvasMatrix.append("g").attr("id", "columnTextsGroup")
+  var cellsGroup = canvasMatrix.append("g").attr("id", "cellsGroup")
+  var rowTextsGroup = canvasMatrix.append("g").attr("id", "rowTextsGroup")
+  var columnTextsGroup = canvasMatrix.append("g").attr("id", "columnTextsGroup")
 
-var matrixCells = canvasMatrix.select("#cellsGroup").selectAll("rect").data(corrArray).enter()
-                              .append("rect")
-                              .attr("x", function (d, index) { return xScaleMatrix(index % charQuant); })
-                              .attr("y", function (d, index) { return heightMatrix + margin.top - yScaleMatrix(Math.floor(index/charQuant));})
-                              .attr("width", function (d, index) { return xScaleMatrix(index+1) - xScaleMatrix(index); })
-                              .attr("height", function (d, index) { return yScaleMatrix(index) - yScaleMatrix(index+1); })
-                              .attr("fill", function(d){
-                                return colorScaleMatrix(d)
-                              })
-                              // .attr("fill-opacity", function(d, index){
-                              //   return Math.sqrt(d/corrArray[0])
-                              // })
-                              .attr("stroke", "black")
-                              .attr("stroke-width", 0.7)
-                              .on("mouseover", function(d, index){
-                                d3.select(this).style("cursor", "pointer");
-
-                                d3.select("#cellsGroup").selectAll("rect")
-                                .attr("stroke-width", function(d2, index2){
-                                  if(index2==index) return 2.5
-                                  else return 0.7
+  var matrixCells = canvasMatrix.select("#cellsGroup").selectAll("rect").data(corrArray).enter()
+                                .append("rect")
+                                .attr("x", function (d, index) { return xScaleMatrix(index % charQuant); })
+                                .attr("y", function (d, index) { return heightMatrix + margin.top - yScaleMatrix(Math.floor(index/charQuant));})
+                                .attr("width", function (d, index) { return xScaleMatrix(index+1) - xScaleMatrix(index); })
+                                .attr("height", function (d, index) { return yScaleMatrix(index) - yScaleMatrix(index+1); })
+                                .attr("fill", function(d){
+                                  return colorScaleMatrix(d)
                                 })
+                                // .attr("fill-opacity", function(d, index){
+                                //   return Math.sqrt(d/corrArray[0])
+                                // })
+                                .attr("stroke", "black")
+                                .attr("stroke-width", 0.7)
+                                .on("mouseover", function(d, index){
+                                  d3.select(this).style("cursor", "pointer");
 
-                                d3.select("#columnTextsGroup").selectAll("text")
-                                  .style('fill', function(d2, index2){
-                                    if(index2==(index%charQuant)) return "red"
-                                    else return "black"
+                                  d3.select("#cellsGroup").selectAll("rect")
+                                  .attr("stroke-width", function(d2, index2){
+                                    if(index2==index) return 2.5
+                                    else return 0.7
                                   })
-                                d3.select("#rowTextsGroup").selectAll("text")
-                                  .style('fill', function(d2, index2){
-                                    if(index2==(Math.floor(index/charQuant))) return "red"
-                                    else return "black"
-                                  })
+
+                                  d3.select("#columnTextsGroup").selectAll("text")
+                                    .style('fill', function(d2, index2){
+                                      if(index2==(index%charQuant)) return "red"
+                                      else return "black"
+                                    })
+                                  d3.select("#rowTextsGroup").selectAll("text")
+                                    .style('fill', function(d2, index2){
+                                      if(index2==(Math.floor(index/charQuant))) return "red"
+                                      else return "black"
+                                    })
+                                })
+                                .on("click", function(d, i) {
+                                  //Cria diagrama de venn com os personagens selecionados
+
+                                  var char1 = desiredCharacters[i%charQuant];
+                                  var char2 = desiredCharacters[Math.floor(i/charQuant)];
+
+                                  var sets = [{sets: [char1.name], size: char1.screenTime},
+                                              {sets: [char2.name], size: char2.screenTime},
+                                              {sets: [char1.name, char2.name], size: corrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
+
+                                  var chart = venn.VennDiagram();
+
+                                  canvasVenn.datum(sets).call(chart);
+
+                                  showSceneTime(canvasVenn);
+                                });
+
+  var rowTexts = canvasMatrix.select("#rowTextsGroup").selectAll("text").data(desiredCharacters).enter()
+                              .append("text")
+                              .attr("x", margin.left - 5)
+                              .attr("y", function (d, index) {return heightMatrix + margin.top - yScaleMatrix(index+1);})
+                              .text( function (d) { return d.name; })
+                              .style("fill", "black")
+                              .attr("font-size", "14px")
+                              .style("alignment-baseline", "ideographic")
+                              .style("text-anchor", "end")
+
+  var columnTexts = canvasMatrix.select("#columnTextsGroup").selectAll("text").data(desiredCharacters).enter()
+                              .append("text")
+                              .attr("x", function (d, index) {return xScaleMatrix(index % charQuant); })
+                              .attr("y", margin.top)
+                              .text( function (d) { return d.name; })
+                              .style("fill", "black")
+                              .attr("font-size", "14px")
+                              .style("alignment-baseline", "ideographic")
+                              .attr('transform', function(d, index) {
+                                return 'translate( '+
+                                (xScaleMatrix(index+1) - margin.left)
+                                +' , '+
+                                (yScaleMatrix(charQuant)+(index*(yScaleMatrix(index) - yScaleMatrix(index+1)))+margin.top-5)
+                                +'),'+ 'rotate(-90)';
                               })
-                              .on("click", function(d, i) {
-                                //Cria diagrama de venn com os personagens selecionados
-
-                                var char1 = desiredCharacters[i%charQuant];
-                                var char2 = desiredCharacters[Math.floor(i/charQuant)];
-
-                                var sets = [{sets: [char1.name], size: char1.screenTime},
-                                            {sets: [char2.name], size: char2.screenTime},
-                                            {sets: [char1.name, char2.name], size: corrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
-
-                                var chart = venn.VennDiagram();
-
-                                canvasVenn.datum(sets).call(chart);
-
-                                showSceneTime(canvasVenn);
-                              });
-
-var rowTexts = canvasMatrix.select("#rowTextsGroup").selectAll("text").data(desiredCharacters).enter()
-                            .append("text")
-                            .attr("x", margin.left - 5)
-                            .attr("y", function (d, index) {return heightMatrix + margin.top - yScaleMatrix(index+1);})
-                            .text( function (d) { return d.name; })
-                            .style("fill", "black")
-                            .attr("font-size", "14px")
-                            .style("alignment-baseline", "ideographic")
-                            .style("text-anchor", "end")
-
-var columnTexts = canvasMatrix.select("#columnTextsGroup").selectAll("text").data(desiredCharacters).enter()
-                            .append("text")
-                            .attr("x", function (d, index) {return xScaleMatrix(index % charQuant); })
-                            .attr("y", margin.top)
-                            .text( function (d) { return d.name; })
-                            .style("fill", "black")
-                            .attr("font-size", "14px")
-                            .style("alignment-baseline", "ideographic")
-                            .attr('transform', function(d, index) {
-                              return 'translate( '+
-                              (xScaleMatrix(index+1) - margin.left)
-                              +' , '+
-                              (yScaleMatrix(charQuant)+(index*(yScaleMatrix(index) - yScaleMatrix(index+1)))+margin.top-5)
-                              +'),'+ 'rotate(-90)';
-                            })
-});
+  });
+}
 
 function reorder() {
-  myclusters = clusters(corrMatrix, 10)
+  myclusters = clusters(corrMatrix, (10))
   orderedClusters = orderClusters(myclusters)
 
   newCorrMatrix = []
@@ -362,6 +364,8 @@ function reorder() {
 
 }
 
+drawMatrix(charQuant);
+
 canvasMatrix.append("circle")
             .attr("cx", "800")
             .attr("cy", "100")
@@ -370,6 +374,14 @@ canvasMatrix.append("circle")
             .on("click", function() {
               reorder()
             });
+
+// canvasMatrix.append("input")
+//     .attr("type","range")
+//     .attr("id","charInput")
+//     .attr("min","20")
+//     .attr("max", "70")
+//     .attr("value","50")
+//     .onchange("drawMatrix(this.value)")
 
 //Mostra o tempo de cena que cada circulo representa ao passar o mouse pelo circulo
 function showSceneTime(canvasVenn) {
