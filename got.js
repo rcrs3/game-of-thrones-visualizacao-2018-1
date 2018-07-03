@@ -18,6 +18,10 @@ var yScaleMatrix = d3.scaleLinear()
                .domain([0, charQuant])
 	             .range([heightMatrix , margin.top]);
 
+var colorScaleMatrix = d3.scaleLinear()
+              .domain([0,50,500,4000,8000,20000,32956])
+              .range(['white','#f7fbff','#c6dbef','#6baed6','#2171b5','#08519c','#08306b']);
+
 // to convert scene start/end times into seconds
 function toSecs(timeString){
   var sec = 0;
@@ -38,7 +42,7 @@ function compareTime(a,b) {
 function distance(arr1, arr2){
   som = 0
   for (var i = 0; i < arr1.length; i++) {
-    som += (arr1[i] - arr2[i])**2
+    som += (Math.sign(arr1[i]) - Math.sign(arr2[i]))**2
   }
 
   return (Math.sqrt(som))
@@ -129,6 +133,24 @@ function clusters(matrix, clustNumber){
 
 }
 
+function orderClusters(myclusters){
+  var counter = 0
+  orderedClusters = []
+  for (var i = 0; i < myclusters.length; i++) {
+    orderedClusters.push(i)
+  }
+
+  for (var i = 0; i < myclusters.length; i++) {
+    for (var j = 0; j < myclusters.length; j++) {
+      if (myclusters[j] == i) {
+        orderedClusters[j]=counter
+        counter++
+      }
+    }
+  }
+  return orderedClusters
+}
+
 d3.json("https://raw.githubusercontent.com/jeffreylancaster/game-of-thrones/master/data/episodes.json", function(json) {
   epi = json.episodes
   for (var i = 0; i < epi.length; i++) {
@@ -195,10 +217,6 @@ for (var i = 0; i < charQuant; i++) {
 var cellsGroup = canvasMatrix.append("g").attr("id", "cellsGroup")
 var rowTextsGroup = canvasMatrix.append("g").attr("id", "rowTextsGroup")
 var columnTextsGroup = canvasMatrix.append("g").attr("id", "columnTextsGroup")
-
-var colorScaleMatrix = d3.scaleLinear()
-               .domain([0,50,500,4000,8000,20000,corrArray[0]])
-               .range(['white','#f7fbff','#c6dbef','#6baed6','#2171b5','#08519c','#08306b']);
 
 var matrixCells = canvasMatrix.select("#cellsGroup").selectAll("rect").data(corrArray).enter()
                               .append("rect")
@@ -277,6 +295,81 @@ var columnTexts = canvasMatrix.select("#columnTextsGroup").selectAll("text").dat
                               +'),'+ 'rotate(-90)';
                             })
 });
+
+function reorder() {
+  myclusters = clusters(corrMatrix, 10)
+  orderedClusters = orderClusters(myclusters)
+
+  newCorrMatrix = []
+  for (var i = 0; i < charQuant; i++) {
+    line = []
+    for (var j = 0; j < charQuant; j++) {
+      line.push(0)
+    }
+    newCorrMatrix.push(line)
+  }
+
+  for (var i = 0; i < charQuant; i++) {
+    for (var j = 0; j < charQuant; j++) {
+      newCorrMatrix[orderedClusters[i]][orderedClusters[j]] = (corrMatrix[i][j])
+    }
+  }
+
+  newCorrArray = []
+  for (var i = 0; i < newCorrMatrix.length; i++) {
+    for (var j = 0; j < newCorrMatrix.length; j++) {
+      newCorrArray.push(newCorrMatrix[i][j])
+    }
+  }
+
+  newCharacters = []
+  for (var i = 0; i < charQuant; i++) {
+    newCharacters.push("")
+  }
+
+  for (var i = 0; i < desiredCharacters.length; i++) {
+    newCharacters[orderedClusters[i]] = desiredCharacters[i]
+  }
+
+  canvasMatrix.select("#rowTextsGroup").selectAll("text").data(newCharacters).transition().duration(500)
+  .text( function (d) { return d.name; })
+
+  canvasMatrix.select("#columnTextsGroup").selectAll("text").data(newCharacters).transition().duration(500)
+  .text( function (d) { return d.name; })
+
+  canvasMatrix.select("#cellsGroup").selectAll("rect").data(newCorrArray).transition().duration(500)
+  .attr("fill", function(d){
+    return colorScaleMatrix(d)
+  })
+
+  canvasMatrix.select("#cellsGroup").selectAll("rect").data(newCorrArray)
+  .on("click", function(d, i) {
+    //Cria diagrama de venn com os personagens selecionados
+
+    var char1 = newCharacters[i%charQuant];
+    var char2 = newCharacters[Math.floor(i/charQuant)];
+
+    var sets = [{sets: [char1.name], size: char1.screenTime},
+                {sets: [char2.name], size: char2.screenTime},
+                {sets: [char1.name, char2.name], size: newCorrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
+
+    var chart = venn.VennDiagram();
+
+    canvasVenn.datum(sets).call(chart);
+
+    showSceneTime(canvasVenn);
+  });
+
+}
+
+canvasMatrix.append("circle")
+            .attr("cx", "800")
+            .attr("cy", "100")
+            .attr("r", 20)
+            .style("fill", "red")
+            .on("click", function() {
+              reorder()
+            });
 
 //Mostra o tempo de cena que cada circulo representa ao passar o mouse pelo circulo
 function showSceneTime(canvasVenn) {
