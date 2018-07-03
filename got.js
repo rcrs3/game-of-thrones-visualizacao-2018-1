@@ -41,7 +41,7 @@ function distance(arr1, arr2){
     som += (arr1[i] - arr2[i])**2
   }
 
-  return Math.sqrt(som)
+  return (Math.sqrt(som))
 }
 
 function calcDists(matrix) {
@@ -106,6 +106,21 @@ function clusters(matrix, clustNumber){
     for (var l = 0; l < myclusters.length; l++) {
       if (myclusters[l] == value1){
         myclusters[l] = value0
+      }
+    }
+    counter = 0
+    for (var m = 0; m < myclusters.length; m++) {
+      if (myclusters[m] == value0) counter++
+    }
+
+    if (counter>(charQuant/clustNumber)) {
+      for (var n = 0; n < myclusters.length; n++) {
+        if (myclusters[n] == value0){
+          for (var p = 0; p < myclusters.length; p++) {
+            distMatrix[n][p] = Number.MAX_SAFE_INTEGER
+            distMatrix[p][n] = Number.MAX_SAFE_INTEGER
+          }
+        }
       }
     }
   }
@@ -280,7 +295,9 @@ function showSceneTime(canvasVenn) {
         venn.sortAreas(canvasVenn, d);
 
         tooltip.transition().duration(400).style("opacity", .9);
-        tooltip.text((d.size/60).toFixed(2) + " minutes");
+        if (d.size/60 > 60) tooltip.text((d.size/60/60).toFixed(2) + " hours");
+        else if (d.size > 60) tooltip.text((d.size/60).toFixed(2) + " minutes");
+        else tooltip.text(d.size + " seconds");
 
         var selection = d3.select(this).transition("tooltip").duration(400);
         selection.select("path")
