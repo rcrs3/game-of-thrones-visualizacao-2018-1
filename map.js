@@ -2,7 +2,7 @@ const kingdom = 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visuali
 
 this.map = L.map('mapid').setView([10, 30], 4);
         L.tileLayer(
-          'https://cartocdn-ashbu.global.ssl.fastly.net/ramirocartodb/api/v1/map/named/tpl_756aec63_3adb_48b6_9d14_331c6cbc47cf/all/{z}/{x}/{y}.png',
+          'https://cartocdn-gusc-d.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@1891dec87191be4cadc288f181fae4be:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
           { crs: L.CRS.EPSG4326 }).addTo(this.map); 
 
 function loadGeojson (button) {
