@@ -4,9 +4,9 @@ corrMatrix = []
 charQuant = 50
 
 var canvasMatrix = d3.select("#screenMatrix")
-var canvasVenn = d3.select("#Venn")
+var canvasVenn = d3.select("#screenMatrix").append("g").attr("transform", "translate( 700,250)");
 
-var margin = {top:150, bottom:150, left:150, right:150}
+var margin = {top:150, bottom:150, left:150, right:450}
 var widthMatrix = screenMatrix.width.baseVal.value - margin.left - margin.right
 var heightMatrix = screenMatrix.height.baseVal.value - margin.bottom - margin.top
 
