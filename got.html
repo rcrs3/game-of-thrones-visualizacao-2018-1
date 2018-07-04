@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <html>
   <head>
     <meta charset="UTF-8">
@@ -19,7 +21,16 @@
         border-radius: 8px;
         opacity: 0;
       }
+      #divCluster {
+		    position: absolute;
+		    top: 155px;
+		    right: 160px;
+	    }
       </style>
+    <div id="divCluster">
+      <input id="nCluster" placeholder="Put number of clusters">
+      <Button onclick="reorder()">Reorder Matrix</Button>
+    </div>
 
     <svg id="screenMatrix" width="1300" height="1000">
     </svg>

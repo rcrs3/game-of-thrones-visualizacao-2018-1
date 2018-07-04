@@ -238,7 +238,7 @@ function drawMatrix(charQuant) {
 
                                   d3.select("#cellsGroup").selectAll("rect")
                                   .attr("stroke-width", function(d2, index2){
-                                    if(index2==index) return 2.5
+                                    if(index2==index) return 2.0
                                     else return 0.7
                                   })
 
@@ -273,20 +273,20 @@ function drawMatrix(charQuant) {
   var rowTexts = canvasMatrix.select("#rowTextsGroup").selectAll("text").data(desiredCharacters).enter()
                               .append("text")
                               .attr("x", margin.left - 5)
-                              .attr("y", function (d, index) {return heightMatrix + margin.top - yScaleMatrix(index+1);})
+                              .attr("y", function (d, index) {return heightMatrix + margin.top - yScaleMatrix(index+1) - 2;})
                               .text( function (d) { return d.name; })
                               .style("fill", "black")
-                              .attr("font-size", "14px")
+                              .attr("font-size", "11px")
                               .style("alignment-baseline", "ideographic")
                               .style("text-anchor", "end")
 
   var columnTexts = canvasMatrix.select("#columnTextsGroup").selectAll("text").data(desiredCharacters).enter()
                               .append("text")
                               .attr("x", function (d, index) {return xScaleMatrix(index % charQuant); })
-                              .attr("y", margin.top)
+                              .attr("y", margin.top - 2)
                               .text( function (d) { return d.name; })
                               .style("fill", "black")
-                              .attr("font-size", "14px")
+                              .attr("font-size", "11px")
                               .style("alignment-baseline", "ideographic")
                               .attr('transform', function(d, index) {
                                 return 'translate( '+
@@ -299,7 +299,9 @@ function drawMatrix(charQuant) {
 }
 
 function reorder() {
-  myclusters = clusters(corrMatrix, (10))
+  numCluster = document.getElementById("nCluster").value || 1
+
+  myclusters = clusters(corrMatrix, (numCluster))
   orderedClusters = orderClusters(myclusters)
 
   newCorrMatrix = []
@@ -365,23 +367,6 @@ function reorder() {
 }
 
 drawMatrix(charQuant);
-
-canvasMatrix.append("circle")
-            .attr("cx", "800")
-            .attr("cy", "100")
-            .attr("r", 20)
-            .style("fill", "red")
-            .on("click", function() {
-              reorder()
-            });
-
-// canvasMatrix.append("input")
-//     .attr("type","range")
-//     .attr("id","charInput")
-//     .attr("min","20")
-//     .attr("max", "70")
-//     .attr("value","50")
-//     .onchange("drawMatrix(this.value)")
 
 //Mostra o tempo de cena que cada circulo representa ao passar o mouse pelo circulo
 function showSceneTime(canvasVenn) {
