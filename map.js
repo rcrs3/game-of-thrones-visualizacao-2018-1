@@ -1,6 +1,6 @@
 const iconUrl = 'https://cdn.patricktriest.com/atlas-of-thrones/icons/';
 
-this.map = L.map('mapid').setView([10, 30], 4);
+map = L.map('mapid').setView([10, 30], 4);
         L.tileLayer(
           'https://cartocdn-gusc-b.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@514b6ee6792b785b09469b931a2dd5b0:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
           { crs: L.CRS.EPSG4326 }).addTo(this.map); 
@@ -81,3 +81,28 @@ infoPanel.on("click", function(d, i) {
     d3.select(this).attr("class", "info-container")
   }
 });
+
+const plotPoints = (character) => {
+  d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
+    d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
+      if(character in charactersLocations){
+        let passedLocations = {};
+        let cLocations = charactersLocations[character].locations;
+        let allLocations = [];
+        cLocations.forEach((location) => {
+          let local = location[1] || location[0];
+          if((local in locations) && !(local in passedLocations)){
+            allLocations.push(locations[local].reverse());
+            passedLocations[local] = true;
+          }
+        });
+
+        console.log(allLocations);
+        var plottedPolyline = L.Polyline.Plotter(allLocations,{
+            weight: 5,
+            readOnly: true
+        }).addTo(map);
+      }
+    });
+  });
+}
