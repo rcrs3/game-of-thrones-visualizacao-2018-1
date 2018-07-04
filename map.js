@@ -1,4 +1,3 @@
-//map link, incoUrl + layerType + ".svg"
 const iconUrl = 'https://cdn.patricktriest.com/atlas-of-thrones/icons/';
 
 this.map = L.map('mapid').setView([10, 30], 4);
@@ -6,7 +5,6 @@ this.map = L.map('mapid').setView([10, 30], 4);
           'https://cartocdn-gusc-b.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@514b6ee6792b785b09469b931a2dd5b0:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
           { crs: L.CRS.EPSG4326 }).addTo(this.map); 
 
-//Take the leaflet geojson layer for each dataset
 var layers = {
   "kingdom": null,
   "castle": null,
@@ -17,8 +15,6 @@ var layers = {
   "town": null
 }
 
-//load geojson in the map
-//if there is still a layer of the selected type, remove it from the map
 function loadGeojson (layerType) {
   var whatShow = {
     "kingdom": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/kingdoms.geojson',
@@ -85,5 +81,3 @@ infoPanel.on("click", function(d, i) {
     d3.select(this).attr("class", "info-container")
   }
 });
-
-console.log(infoPanel.attr("class"));
