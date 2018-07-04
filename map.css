@@ -1,0 +1,162 @@
+#mapid {
+    height: 100vh;
+  }
+
+#geojson-input {
+	height: 300px;
+	width: 300px;
+	position: absolute;
+	top: 24px;
+	right: 24px;
+	z-index: 1000;
+}
+
+#geojson-text-area {
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	margin: 0;
+}
+
+
+.layer-toggle {
+	display: none;
+}
+
+.layer-panel {
+	position: absolute;
+	top: 24px;
+	right: 24px;
+	padding: 12px;
+	background: #222;
+	z-index: 1000;
+	color: #faebd7;
+}
+
+.layer-panel h3 {
+	text-align: center;
+	text-transform: uppercase;
+	margin: 0 auto;
+}
+
+.layer-buttons {
+	text-transform: uppercase;
+}
+
+.layer-buttons div {
+	color: #666;
+	border-top: 1px solid #faebd7;
+	padding: 6px;
+	cursor: pointer;
+	user-select: none;
+	font-family: "Lato", sans-serif;
+}
+
+.layer-buttons div.toggle-active {
+	color: #faebd7;
+}
+
+.layer-buttons :last-child {
+	border-bottom: 1px solid #faebd7;
+}
+
+@media (max-width: 600px) {
+	.layer-panel {
+		display: inline-flex;
+		align-items: center;
+		top: 15%;
+		right: 0;
+		transform: translateX(calc(100% - 40px));
+		transition: all 0.3s ease-in-out;
+	}
+
+	.layer-panel.layer-panel-active {
+		transform: translateX(0);
+	}
+
+	.layer-toggle {
+		cursor: pointer;
+		display: block;
+		width: 40px;
+		transform: translateY(120%) rotate(-90deg);
+		padding: 10px;
+		margin-left: -20px;
+		letter-spacing: 1rem;
+		text-transform: uppercase;
+	}
+}
+
+.info-title {
+	font-family: 'MedievalSharp', cursive;
+	height: 80px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	user-select: none;
+	color: #faebd7;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+  }
+  .info-title h1 {
+	letter-spacing: 0.3rem;
+	max-width: 100%;
+	padding: 20px;
+	text-overflow: ellipsis;
+	text-align: center;
+  }
+  .info-content {
+	padding: 0 8% 24px 8%;
+	margin: 0 auto;
+	background: #333;
+	overflow-y: scroll;
+	font-size: 1rem;
+	line-height: 1.25em;
+	font-weight: 300;
+  }
+  #info-container {
+	position: absolute;
+	overflow-y: hidden;
+	bottom: 0;
+	left: 24px;
+	z-index: 1000;
+	background: #222;
+	width: 500px;
+	height: 60vh;
+	color: #faebd7;
+	transition: all 0.4s ease-in-out;
+	transform: translateY(calc(100% - 80px));
+  }
+  #info-container.info-active {
+	transform: translateY(0);
+  }
+  .info-body {
+	margin-top: 80px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	position: relative;
+	height: 80%;
+  }
+  .info-footer {
+	font-size: 0.8rem;
+	font-family: 'Lato', sans-serif;
+	padding: 8%;
+	text-align: center;
+	text-transform: uppercase;
+  }
+  .blog-link {
+	letter-spacing: 0.1rem;
+	font-weight: bold;
+  }
+  @media (max-width: 600px) {
+	.info-container {
+	  left: 0;
+	  width: 100%;
+	  height: 80vh;
+	}
+  }
+  
