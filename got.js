@@ -255,6 +255,8 @@ function drawMatrix(charQuant) {
                                 })
                                 .on("click", function(d, i) {
                                   //Cria diagrama de venn com os personagens selecionados
+                                  
+                                  var colours = ['#6b6b47', '#000000']
 
                                   var char1 = desiredCharacters[i%charQuant];
                                   var char2 = desiredCharacters[Math.floor(i/charQuant)];
@@ -266,6 +268,16 @@ function drawMatrix(charQuant) {
                                   var chart = venn.VennDiagram();
 
                                   canvasVenn.datum(sets).call(chart);
+                                  
+
+                                  d3.selectAll(".venn-circle path")
+                                    .style("fill", function(d, i) {
+                                      return colours[i];
+                                    })
+                                    .style("fill-opacity", 0.7);
+                                  
+                                  d3.selectAll(".venn-circle text")
+                                    .style("fill", "white");
 
                                   showSceneTime(canvasVenn);
                                 });
@@ -356,9 +368,9 @@ function reorder() {
     var sets = [{sets: [char1.name], size: char1.screenTime},
                 {sets: [char2.name], size: char2.screenTime},
                 {sets: [char1.name, char2.name], size: newCorrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
-
+    
     var chart = venn.VennDiagram();
-
+    
     canvasVenn.datum(sets).call(chart);
 
     showSceneTime(canvasVenn);
@@ -392,7 +404,7 @@ function showSceneTime(canvasVenn) {
         var selection = d3.select(this).transition("tooltip").duration(400);
         selection.select("path")
             .style("stroke-width", 3)
-            .style("fill-opacity", d.sets.length == 1 ? .4 : .1)
+            .style("fill-opacity", d.sets.length == 1 ? .25 : .7)
             .style("stroke-opacity", 1);
     })
     .on("mousemove", function() {
@@ -404,7 +416,7 @@ function showSceneTime(canvasVenn) {
         var selection = d3.select(this).transition("tooltip").duration(400);
         selection.select("path")
             .style("stroke-width", 0)
-            .style("fill-opacity", d.sets.length == 1 ? .25 : .0)
+            .style("fill-opacity", d.sets.length == 1 ? .7 : .25)
             .style("stroke-opacity", 0);
     });
 }
