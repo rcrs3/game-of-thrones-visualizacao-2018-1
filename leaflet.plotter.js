@@ -147,6 +147,8 @@ L.Polyline.plotter = L.Polyline.extend({
     _redraw: function(){
         this.setLatLngs([]);
         this.redraw();
+        console.log(this._lineMarkers);
+        console.log(this._existingLatLngs);
         for(index in this._lineMarkers){
             this.addLatLng(this._lineMarkers[index].getLatLng());
         }
@@ -155,5 +157,6 @@ L.Polyline.plotter = L.Polyline.extend({
 });
 
 L.Polyline.Plotter = function(latlngs, options){
-    return new L.Polyline.plotter(latlngs, options);
+    let p = new L.Polyline.plotter(latlngs, options);
+    return p;
 };

@@ -3,6 +3,9 @@ var allCharacters = []
 corrMatrix = []
 charQuant = 50
 
+var polyline1;
+var polyline2;
+
 var canvasMatrix = d3.select("#screenMatrix")
 var canvasVenn = d3.select("#screenMatrix").append("g").attr("transform", "translate( 700,250)");
 
@@ -261,6 +264,15 @@ function drawMatrix(charQuant) {
                                   var char1 = desiredCharacters[i%charQuant];
                                   var char2 = desiredCharacters[Math.floor(i/charQuant)];
 
+                                  
+
+                                  if(char2.name && char1.name != char2.name){
+                                    plotPoints2(char1.name, char2.name);
+                                  }else{
+                                    plotPoints1(char1.name);
+                                  }
+                                    
+
                                   var sets = [{sets: [char1.name], size: char1.screenTime},
                                               {sets: [char2.name], size: char2.screenTime},
                                               {sets: [char1.name, char2.name], size: corrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
@@ -419,4 +431,65 @@ function showSceneTime(canvasVenn) {
             .style("fill-opacity", d.sets.length == 1 ? .7 : .25)
             .style("stroke-opacity", 0);
     });
+}
+
+map = L.map('mapid', {minZoom: 3, maxZoom: 6}).setView([10, 35], 3);
+
+L.tileLayer(
+  'https://cartocdn-gusc-b.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@514b6ee6792b785b09469b931a2dd5b0:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
+  { crs: L.CRS.EPSG4326 }
+).addTo(this.map); 
+
+const plotPoints1 = (character) => {
+  clearMap();
+  d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
+    d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
+      if(character in charactersLocations){
+        let a1 = getAllLocations(locations, charactersLocations, character);
+
+        polyline1 = L.polyline(a1, {color: '#000000'}).addTo(map);
+      }
+    });
+  });
+}
+
+const plotPoints2 = (c1, c2) => {
+  clearMap();
+  d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
+    d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
+      let a1 = getAllLocations(locations, charactersLocations, c1);
+      let a2 = getAllLocations(locations, charactersLocations, c2);
+
+      polyline1 = L.polyline(a1, {color: '#6b6b47'}).addTo(map);
+      polyline2 = L.polyline(a2, {color: '#000000'}).addTo(map);
+    });
+  });
+}
+
+const getAllLocations = (locations, charactersLocations, character) => {
+  if(character in charactersLocations){
+    let passedLocations = {};
+    let cLocations = charactersLocations[character].locations;
+    let allLocations = [];
+    cLocations.forEach((location) => {
+      let local = location[1] || location[0];
+      if((local in locations) && !(local in passedLocations)){
+        allLocations.push(locations[local].reverse());
+        passedLocations[local] = true;
+      }
+    });
+    return allLocations;
+  }
+  return [];
+}
+
+function clearMap() {
+  if(polyline1 != null){
+    map.removeLayer(polyline1);
+    polyline1 = null;
+  }
+  if(polyline2 != null){
+    map.removeLayer(polyline2);
+    polyline2 = null;
+  }
 }
