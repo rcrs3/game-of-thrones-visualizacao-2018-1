@@ -258,20 +258,20 @@ function drawMatrix(charQuant) {
                                 })
                                 .on("click", function(d, i) {
                                   //Cria diagrama de venn com os personagens selecionados
-                                  
+
                                   var colours = ['#6b6b47', '#000000']
 
                                   var char1 = desiredCharacters[i%charQuant];
                                   var char2 = desiredCharacters[Math.floor(i/charQuant)];
 
-                                  
+
 
                                   if(char2.name && char1.name != char2.name){
                                     plotPoints2(char1.name, char2.name);
                                   }else{
                                     plotPoints1(char1.name);
                                   }
-                                    
+
 
                                   var sets = [{sets: [char1.name], size: char1.screenTime},
                                               {sets: [char2.name], size: char2.screenTime},
@@ -280,14 +280,14 @@ function drawMatrix(charQuant) {
                                   var chart = venn.VennDiagram();
 
                                   canvasVenn.datum(sets).call(chart);
-                                  
+
 
                                   d3.selectAll(".venn-circle path")
                                     .style("fill", function(d, i) {
                                       return colours[i];
                                     })
                                     .style("fill-opacity", 0.7);
-                                  
+
                                   d3.selectAll(".venn-circle text")
                                     .style("fill", "white");
 
@@ -372,20 +372,41 @@ function reorder() {
 
   canvasMatrix.select("#cellsGroup").selectAll("rect").data(newCorrArray)
   .on("click", function(d, i) {
-    //Cria diagrama de venn com os personagens selecionados
+
+    var colours = ['#6b6b47', '#000000']
 
     var char1 = newCharacters[i%charQuant];
     var char2 = newCharacters[Math.floor(i/charQuant)];
 
+
+
+    if(char2.name && char1.name != char2.name){
+      plotPoints2(char1.name, char2.name);
+    }else{
+      plotPoints1(char1.name);
+    }
+
+
     var sets = [{sets: [char1.name], size: char1.screenTime},
                 {sets: [char2.name], size: char2.screenTime},
                 {sets: [char1.name, char2.name], size: newCorrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
-    
+
     var chart = venn.VennDiagram();
-    
+
     canvasVenn.datum(sets).call(chart);
 
+
+    d3.selectAll(".venn-circle path")
+      .style("fill", function(d, i) {
+        return colours[i];
+      })
+      .style("fill-opacity", 0.7);
+
+    d3.selectAll(".venn-circle text")
+      .style("fill", "white");
+
     showSceneTime(canvasVenn);
+
   });
 
 }
@@ -438,7 +459,7 @@ map = L.map('mapid', {minZoom: 3, maxZoom: 6}).setView([10, 35], 3);
 L.tileLayer(
   'https://cartocdn-gusc-b.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@514b6ee6792b785b09469b931a2dd5b0:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
   { crs: L.CRS.EPSG4326 }
-).addTo(this.map); 
+).addTo(this.map);
 
 const plotPoints1 = (character) => {
   clearMap();
