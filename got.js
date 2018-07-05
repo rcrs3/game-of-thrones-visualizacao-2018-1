@@ -152,7 +152,7 @@ function orderClusters(myclusters){
 }
 
 function drawMatrix(charQuant) {
-  d3.json("data/episodes.json", function(json) {
+  d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/episodes.json", function(json) {
     epi = json.episodes
     for (var i = 0; i < epi.length; i++) {
       epiScenes = epi[i].scenes

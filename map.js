@@ -15,16 +15,17 @@ var layers = {
   "town": null
 }
 
+var whatShow = {
+  "kingdom": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/kingdoms.geojson',
+  "castle": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/castle.json',
+  "city": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/city.json',
+  "landmark": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/landmark.json',
+  "region": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/region.json',
+  "ruin": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/ruin.json',
+  "town": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/town.json'
+};
+
 function loadGeojson (layerType) {
-  var whatShow = {
-    "kingdom": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/kingdoms.geojson',
-    "castle": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/castle.json',
-    "city": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/city.json',
-    "landmark": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/landmark.json',
-    "region": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/region.json',
-    "ruin": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/ruin.json',
-    "town": 'https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/town.json'
-  };
   
   if(layers[layerType] !== null) {
   
@@ -97,7 +98,6 @@ const plotPoints = (character) => {
           }
         });
 
-        console.log(allLocations);
         var plottedPolyline = L.Polyline.Plotter(allLocations,{
             weight: 5,
             readOnly: true
