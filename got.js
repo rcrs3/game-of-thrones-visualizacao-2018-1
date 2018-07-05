@@ -289,7 +289,9 @@ function drawMatrix(charQuant) {
                                     .style("fill-opacity", 0.7);
 
                                   d3.selectAll(".venn-circle text")
-                                    .style("fill", "white");
+                                    .style("fill", "white")
+                                    .style("stroke", "black")
+                                    .style("stroke-width", 0.5);
 
                                   showSceneTime(canvasVenn);
                                 });
@@ -403,7 +405,9 @@ function reorder() {
       .style("fill-opacity", 0.7);
 
     d3.selectAll(".venn-circle text")
-      .style("fill", "white");
+      .style("fill", "white")
+      .style("stroke", "black")
+      .style("stroke-width", 0.5);
 
     showSceneTime(canvasVenn);
 
