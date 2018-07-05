@@ -23,7 +23,7 @@ var yScaleMatrix = d3.scaleLinear()
 
 var colorScaleMatrix = d3.scaleLinear()
               .domain([0,50,500,4000,8000,20000,32956])
-              .range(['white','#f7fbff','#c6dbef','#6baed6','#2171b5','#08519c','#08306b']);
+              .range(['white','#fffff2','#f7f7d7','#a5a57f','#727252','#47472f','#2b2b1a']);
 
 // to convert scene start/end times into seconds
 function toSecs(timeString){
@@ -247,13 +247,13 @@ function drawMatrix(charQuant) {
 
                                   d3.select("#columnTextsGroup").selectAll("text")
                                     .style('fill', function(d2, index2){
-                                      if(index2==(index%charQuant)) return "red"
-                                      else return "black"
+                                      if(index2==(index%charQuant)) return "#beff96"
+                                      else return "white"
                                     })
                                   d3.select("#rowTextsGroup").selectAll("text")
                                     .style('fill', function(d2, index2){
-                                      if(index2==(Math.floor(index/charQuant))) return "red"
-                                      else return "black"
+                                      if(index2==(Math.floor(index/charQuant))) return "#beff96"
+                                      else return "white"
                                     })
                                 })
                                 .on("click", function(d, i) {
@@ -290,8 +290,6 @@ function drawMatrix(charQuant) {
 
                                   d3.selectAll(".venn-circle text")
                                     .style("fill", "white")
-                                    .style("stroke", "black")
-                                    .style("stroke-width", 0.5);
 
                                   showSceneTime(canvasVenn);
                                 });
@@ -301,7 +299,7 @@ function drawMatrix(charQuant) {
                               .attr("x", margin.left - 5)
                               .attr("y", function (d, index) {return heightMatrix + margin.top - yScaleMatrix(index+1) - 2;})
                               .text( function (d) { return d.name; })
-                              .style("fill", "black")
+                              .style("fill", "white")
                               .attr("font-size", "11px")
                               .style("alignment-baseline", "ideographic")
                               .style("text-anchor", "end")
@@ -311,7 +309,7 @@ function drawMatrix(charQuant) {
                               .attr("x", function (d, index) {return xScaleMatrix(index % charQuant); })
                               .attr("y", margin.top - 2)
                               .text( function (d) { return d.name; })
-                              .style("fill", "black")
+                              .style("fill", "white")
                               .attr("font-size", "11px")
                               .style("alignment-baseline", "ideographic")
                               .attr('transform', function(d, index) {
@@ -406,8 +404,6 @@ function reorder() {
 
     d3.selectAll(".venn-circle text")
       .style("fill", "white")
-      .style("stroke", "black")
-      .style("stroke-width", 0.5);
 
     showSceneTime(canvasVenn);
 
@@ -458,7 +454,7 @@ function showSceneTime(canvasVenn) {
     });
 }
 
-map = L.map('mapid', {minZoom: 3, maxZoom: 6}).setView([10, 35], 3);
+map = L.map('mapid', {minZoom: 3, maxZoom: 6}).setView([10, 35], 4);
 
 L.tileLayer(
   'https://cartocdn-gusc-b.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@514b6ee6792b785b09469b931a2dd5b0:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
