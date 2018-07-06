@@ -8,6 +8,7 @@ var polyline2;
 
 var canvasMatrix = d3.select("#screenMatrix")
 var canvasVenn = d3.select("#screenMatrix").append("g").attr("transform", "translate( 700,250)");
+var chart = venn.VennDiagram();
 
 var margin = {top:150, bottom:150, left:150, right:450}
 var widthMatrix = screenMatrix.width.baseVal.value - margin.left - margin.right
@@ -277,8 +278,6 @@ function drawMatrix(charQuant) {
                                               {sets: [char2.name], size: char2.screenTime},
                                               {sets: [char1.name, char2.name], size: corrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
 
-                                  var chart = venn.VennDiagram();
-
                                   canvasVenn.datum(sets).call(chart);
 
 
@@ -391,8 +390,6 @@ function reorder() {
                 {sets: [char2.name], size: char2.screenTime},
                 {sets: [char1.name, char2.name], size: newCorrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
 
-    var chart = venn.VennDiagram();
-
     canvasVenn.datum(sets).call(chart);
 
 
@@ -415,6 +412,7 @@ drawMatrix(charQuant);
 
 //Mostra o tempo de cena que cada circulo representa ao passar o mouse pelo circulo
 function showSceneTime(canvasVenn) {
+
   var tooltip = d3.select("body").append("div").attr("class", "venntooltip");
 
   canvasVenn.selectAll("path")
