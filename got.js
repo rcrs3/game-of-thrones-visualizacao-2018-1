@@ -3,9 +3,6 @@ var allCharacters = []
 corrMatrix = []
 charQuant = 50
 
-var polyline1;
-var polyline2;
-
 var canvasMatrix = d3.select("#screenMatrix")
 var canvasVenn = d3.select("#screenMatrix").append("g").attr("transform", "translate( 700,250)");
 var chart = venn.VennDiagram();
@@ -268,10 +265,10 @@ function drawMatrix(charQuant) {
 
                                   clearMap();
                                   if(char2.name && char1.name != char2.name){
-                                    plotLine(char1.name, colours[0]);
-                                    plotLine(char2.name, colours[1]);
+                                    plotLine(char1.name, colours[0], 13);
+                                    plotLine(char2.name, colours[1], 10);
                                   }else{
-                                    plotLine(char1.name, colours[1]);
+                                    plotLine(char1.name, colours[1], 10);
                                   }
 
 
@@ -452,23 +449,28 @@ L.tileLayer(
   { crs: L.CRS.EPSG4326 }
 ).addTo(this.map);
 
-const plotLine = (character, color) => {
+const plotLine = (character, color, r) => {
   d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
     d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
       if(character in charactersLocations){
-        let a1 = getAllLocations(locations, charactersLocations, character);
+        let allLocations = getAllLocations(locations, charactersLocations, character);
+        
+        L.polyline(allLocations, {color: color}).addTo(map);
 
-        if(polyline1 == null)
-          polyline1 = L.polyline(a1, {color: color}).addTo(map);
-        else
-          polyline2 = L.polyline(a1, {color: color}).addTo(map);
+        allLocations.forEach((l) => {
+          L.circleMarker(l, {
+            radius: r,
+            fillColor: color,
+            fillOpacity: 0.7,
+            stroke: false
+          }).addTo(map);
+        })
       }
     });
   });
 }
 
-const getAllLocations = (locations, charactersLocations, character) => {
-  console.log(locations);
+const getAllLocations = (locations, charactersLocations, character) => {  
   if(character in charactersLocations){
     let passedLocations = {};
     let cLocations = charactersLocations[character].locations;
@@ -486,12 +488,11 @@ const getAllLocations = (locations, charactersLocations, character) => {
 }
 
 function clearMap() {
-  if(polyline1 != null){
-    map.removeLayer(polyline1);
-    polyline1 = null;
-  }
-  if(polyline2 != null){
-    map.removeLayer(polyline2);
-    polyline2 = null;
-  }
+  map.eachLayer(function (layer) {
+    map.removeLayer(layer);
+  });
+  L.tileLayer(
+    'https://cartocdn-gusc-b.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@514b6ee6792b785b09469b931a2dd5b0:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
+    { crs: L.CRS.EPSG4326 }
+  ).addTo(this.map);
 }
