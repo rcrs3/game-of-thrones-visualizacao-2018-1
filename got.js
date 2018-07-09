@@ -462,6 +462,7 @@ const plotLine = (character, color, r) => {
     d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
       if(character in charactersLocations){
         let allLocations = getAllLocations(locations, charactersLocations, character);
+        console.log(allLocations)
 
         var polyline = L.polyline(allLocations, {
           color: color,
