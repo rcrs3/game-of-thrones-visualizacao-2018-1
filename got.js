@@ -459,10 +459,9 @@ var places = {};
 
 const plotLine = (character, color, r) => {
   d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
-   d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
-     if(character in charactersLocations){
+    d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
+      if(character in charactersLocations){
         let allLocations = getAllLocations(locations, charactersLocations, character);
-        console.log(allLocations)
 
         var polyline = L.polyline(allLocations, {
           color: color,
@@ -497,6 +496,11 @@ const getAllLocations = (locations, charactersLocations, character) => {
       let local = location[1] || location[0];
       if((local in locations) && !(local in passedLocations)){
         allLocations.push(locations[local].reverse());
+        passedLocations[local] = true;
+        places[locations[local]] = local;
+      }
+      else if ((local in locations) && !(locations[local] == allLocations[allLocations.length -1] )) {
+        allLocations.push(locations[local]);
         passedLocations[local] = true;
         places[locations[local]] = local;
       }
