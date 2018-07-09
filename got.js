@@ -455,13 +455,17 @@ const plotLine = (character, color, r) => {
       if(character in charactersLocations){
         let allLocations = getAllLocations(locations, charactersLocations, character);
         
-        L.polyline(allLocations, {color: color}).addTo(map);
+        L.polyline(allLocations, {
+          color: color,
+          weight: 3,
+          opacity: 0.7
+        }).addTo(map);
 
         allLocations.forEach((l) => {
           L.circleMarker(l, {
             radius: r,
             fillColor: color,
-            fillOpacity: 0.7,
+            fillOpacity: 0.5,
             stroke: false
           }).addTo(map);
         })
