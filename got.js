@@ -229,9 +229,6 @@ function drawMatrix(charQuant) {
                                 .attr("fill", function(d){
                                   return colorScaleMatrix(d)
                                 })
-                                // .attr("fill-opacity", function(d, index){
-                                //   return Math.sqrt(d/corrArray[0])
-                                // })
                                 .attr("stroke", "black")
                                 .attr("stroke-width", 0.7)
                                 .on("mouseover", function(d, index){
@@ -281,7 +278,7 @@ function drawMatrix(charQuant) {
 
                                   d3.selectAll(".venn-circle path")
                                     .style("fill", function(d, i) {
-                                      return colours[i];
+                                      return colours[i%2];
                                     })
                                     .style("fill-opacity", 0.7);
 
@@ -289,6 +286,7 @@ function drawMatrix(charQuant) {
                                     .style("fill", "white")
 
                                   showSceneTime(canvasVenn);
+
                                 });
 
   var rowTexts = canvasMatrix.select("#rowTextsGroup").selectAll("text").data(desiredCharacters).enter()
@@ -375,6 +373,13 @@ function reorder() {
     var char1 = newCharacters[i%charQuant];
     var char2 = newCharacters[Math.floor(i/charQuant)];
 
+    clearMap();
+    if(char2.name && char1.name != char2.name){
+      plotLine(char1.name, colours[0], 13);
+      plotLine(char2.name, colours[1], 10);
+    }else{
+      plotLine(char1.name, colours[1], 10);
+    }
 
     var sets = [{sets: [char1.name], size: char1.screenTime},
                 {sets: [char2.name], size: char2.screenTime},
@@ -385,7 +390,7 @@ function reorder() {
 
     d3.selectAll(".venn-circle path")
       .style("fill", function(d, i) {
-        return colours[i];
+        return colours[i%2];
       })
       .style("fill-opacity", 0.7);
 
@@ -457,7 +462,7 @@ const plotLine = (character, color, r) => {
     d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
       if(character in charactersLocations){
         let allLocations = getAllLocations(locations, charactersLocations, character);
-        
+
         var polyline = L.polyline(allLocations, {
           color: color,
           weight: 3,
@@ -466,7 +471,7 @@ const plotLine = (character, color, r) => {
 
         polyline.addTo(map);
         layers.push(polyline);
-        
+
         allLocations.forEach((l) => {
           var circle = L.circleMarker(l, {
             radius: r,
@@ -482,7 +487,7 @@ const plotLine = (character, color, r) => {
   });
 }
 
-const getAllLocations = (locations, charactersLocations, character) => {  
+const getAllLocations = (locations, charactersLocations, character) => {
   if(character in charactersLocations){
     let passedLocations = {};
     let cLocations = charactersLocations[character].locations;
