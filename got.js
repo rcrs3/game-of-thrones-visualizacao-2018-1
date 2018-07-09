@@ -266,11 +266,12 @@ function drawMatrix(charQuant) {
                                   var char2 = desiredCharacters[Math.floor(i/charQuant)];
 
 
-
+                                  clearMap();
                                   if(char2.name && char1.name != char2.name){
-                                    plotPoints2(char1.name, char2.name);
+                                    plotLine(char1.name, colours[0]);
+                                    plotLine(char2.name, colours[1]);
                                   }else{
-                                    plotPoints1(char1.name);
+                                    plotLine(char1.name, colours[1]);
                                   }
 
 
@@ -378,14 +379,6 @@ function reorder() {
     var char2 = newCharacters[Math.floor(i/charQuant)];
 
 
-
-    if(char2.name && char1.name != char2.name){
-      plotPoints2(char1.name, char2.name);
-    }else{
-      plotPoints1(char1.name);
-    }
-
-
     var sets = [{sets: [char1.name], size: char1.screenTime},
                 {sets: [char2.name], size: char2.screenTime},
                 {sets: [char1.name, char2.name], size: newCorrMatrix[i%charQuant][Math.floor(i/charQuant)]}];
@@ -459,33 +452,23 @@ L.tileLayer(
   { crs: L.CRS.EPSG4326 }
 ).addTo(this.map);
 
-const plotPoints1 = (character) => {
-  clearMap();
+const plotLine = (character, color) => {
   d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
     d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
       if(character in charactersLocations){
         let a1 = getAllLocations(locations, charactersLocations, character);
 
-        polyline1 = L.polyline(a1, {color: '#000000'}).addTo(map);
+        if(polyline1 == null)
+          polyline1 = L.polyline(a1, {color: color}).addTo(map);
+        else
+          polyline2 = L.polyline(a1, {color: color}).addTo(map);
       }
     });
   });
 }
 
-const plotPoints2 = (c1, c2) => {
-  clearMap();
-  d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
-    d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
-      let a1 = getAllLocations(locations, charactersLocations, c1);
-      let a2 = getAllLocations(locations, charactersLocations, c2);
-
-      polyline1 = L.polyline(a1, {color: '#6b6b47'}).addTo(map);
-      polyline2 = L.polyline(a2, {color: '#000000'}).addTo(map);
-    });
-  });
-}
-
 const getAllLocations = (locations, charactersLocations, character) => {
+  console.log(locations);
   if(character in charactersLocations){
     let passedLocations = {};
     let cLocations = charactersLocations[character].locations;
