@@ -21,7 +21,7 @@ var yScaleMatrix = d3.scaleLinear()
 
 var colorScaleMatrix = d3.scaleLinear()
               .domain([0,50,500,4000,8000,20000,32956])
-              .range(['white','#fffff2','#f7f7d7','#a5a57f','#727252','#47472f','#2b2b1a']);
+              .range(['white','#fffff2','#f7f7d7','#a5a57f','#606043','#47472f','#2b2b1a']);
 
 // to convert scene start/end times into seconds
 function toSecs(timeString){
@@ -459,8 +459,8 @@ var places = {};
 
 const plotLine = (character, color, r) => {
   d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
-    d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
-      if(character in charactersLocations){
+   d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
+     if(character in charactersLocations){
         let allLocations = getAllLocations(locations, charactersLocations, character);
         console.log(allLocations)
 
