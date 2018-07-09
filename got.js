@@ -449,25 +449,33 @@ L.tileLayer(
   { crs: L.CRS.EPSG4326 }
 ).addTo(this.map);
 
+var layers = [];
+var places = {};
+
 const plotLine = (character, color, r) => {
   d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
     d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
       if(character in charactersLocations){
         let allLocations = getAllLocations(locations, charactersLocations, character);
         
-        L.polyline(allLocations, {
+        var polyline = L.polyline(allLocations, {
           color: color,
           weight: 3,
           opacity: 0.7
-        }).addTo(map);
+        });
 
+        polyline.addTo(map);
+        layers.push(polyline);
+        
         allLocations.forEach((l) => {
-          L.circleMarker(l, {
+          var circle = L.circleMarker(l, {
             radius: r,
             fillColor: color,
             fillOpacity: 0.5,
             stroke: false
-          }).addTo(map);
+          });
+          circle.bindTooltip(places[l]).addTo(map);
+          layers.push(circle);
         })
       }
     });
@@ -484,6 +492,7 @@ const getAllLocations = (locations, charactersLocations, character) => {
       if((local in locations) && !(local in passedLocations)){
         allLocations.push(locations[local].reverse());
         passedLocations[local] = true;
+        places[locations[local]] = local;
       }
     });
     return allLocations;
@@ -492,11 +501,7 @@ const getAllLocations = (locations, charactersLocations, character) => {
 }
 
 function clearMap() {
-  map.eachLayer(function (layer) {
+  layers.forEach(function(layer) {
     map.removeLayer(layer);
   });
-  L.tileLayer(
-    'https://cartocdn-gusc-b.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@514b6ee6792b785b09469b931a2dd5b0:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
-    { crs: L.CRS.EPSG4326 }
-  ).addTo(this.map);
 }
