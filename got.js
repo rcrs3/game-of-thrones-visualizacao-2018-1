@@ -459,13 +459,42 @@ L.tileLayer(
   { crs: L.CRS.EPSG4326 }
 ).addTo(this.map);
 
+var markers = [];
+var places = {};
+const iconUrl = 'https://cdn.patricktriest.com/atlas-of-thrones/icons/';
+
+function loadMarkers(path) {
+  for(var i = 0; i < path.length; i++) {
+    iconImage = iconUrl + "landmark.svg";
+    var marker = L.marker(path[i], {
+      icon: L.icon({ iconUrl: iconImage, iconSize: [ 24, 56 ] })
+      }).bindTooltip(places[path[i]]);
+    
+    if(path[i] in markers) {
+      continue;
+    }
+
+    markers.push(marker);
+    marker.addTo(map);
+  } 
+}
+
+function cleanMarkers() {
+  markers.forEach(function(layer) {
+    map.removeLayer(layer);
+  });
+
+  markers = [];
+}
+
 const plotPoints1 = (character) => {
   clearMap();
   d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
     d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
       if(character in charactersLocations){
         let a1 = getAllLocations(locations, charactersLocations, character);
-
+        cleanMarkers();
+        loadMarkers(a1);
         polyline1 = L.polyline(a1, {color: '#000000'}).addTo(map);
       }
     });
@@ -478,7 +507,9 @@ const plotPoints2 = (c1, c2) => {
     d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
       let a1 = getAllLocations(locations, charactersLocations, c1);
       let a2 = getAllLocations(locations, charactersLocations, c2);
-
+      cleanMarkers();
+      loadMarkers(a1);
+      loadMarkers(a2);
       polyline1 = L.polyline(a1, {color: '#6b6b47'}).addTo(map);
       polyline2 = L.polyline(a2, {color: '#000000'}).addTo(map);
     });
@@ -492,9 +523,12 @@ const getAllLocations = (locations, charactersLocations, character) => {
     let allLocations = [];
     cLocations.forEach((location) => {
       let local = location[1] || location[0];
+      
       if((local in locations) && !(local in passedLocations)){
         allLocations.push(locations[local].reverse());
         passedLocations[local] = true;
+        
+        places[locations[local].reverse()] = local;
       }
     });
     return allLocations;
