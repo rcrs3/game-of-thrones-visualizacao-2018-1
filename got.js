@@ -531,13 +531,13 @@ const plotSlider = (c1, c2) => {
     slider.remove();
   }
   slider = L.control.slider(function(value) {
-      plotMarkers(c1, value, '#000000', 18);
+      plotMarkers(c1, value, '#6b6b47', 18);
       if(c1 != c2)
-        plotMarkers(c2, value, '#6b6b47', 20);
+        plotMarkers(c2, value, '#000000', 22);
     }, {
       max: 7,
       min: 0,
-      value: 1,
+      value: 0,
       step: 1,
       size: '250px',
       orientation:'vertical',
