@@ -3,6 +3,8 @@ var allCharacters = []
 corrMatrix = []
 charQuant = 50
 
+var slider = null;
+
 var canvasMatrix = d3.select("#screenMatrix")
 var canvasVenn = d3.select("#screenMatrix").append("g").attr("transform", "translate( 700,250)");
 var chart = venn.VennDiagram();
@@ -261,6 +263,7 @@ function drawMatrix(charQuant) {
 
 
                                   clearMap();
+                                  plotSlider(char1.name, char2.name);
                                   if(char2.name && char1.name != char2.name){
                                     plotLine(char1.name, colours[0], 13);
                                     plotLine(char2.name, colours[1], 10);
@@ -469,7 +472,7 @@ const plotLine = (character, color, r) => {
           opacity: 0.7
         });
 
-        polyline.addTo(map);
+        let pol = polyline.addTo(map);
         layers.push(polyline);
 
         allLocations.forEach((l) => {
@@ -485,6 +488,23 @@ const plotLine = (character, color, r) => {
       }
     });
   });
+}
+
+const plotSlider = (c1, c2) => {
+  if(slider !== null){
+    slider.remove();
+  }
+  slider = L.control.slider(function(value) {
+      console.log(value);
+    }, {
+      max: 7,
+      min: 0,
+      value: 0,
+      step: 1,
+      size: '250px',
+      orientation:'vertical',
+      id: 'slider'
+  }).addTo(map);
 }
 
 const getAllLocations = (locations, charactersLocations, character) => {
