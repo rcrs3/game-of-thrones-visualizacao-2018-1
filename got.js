@@ -377,6 +377,7 @@ function reorder() {
     var char2 = newCharacters[Math.floor(i/charQuant)];
 
     clearMap();
+    plotSlider(char1.name, char2.name);
     if(char2.name && char1.name != char2.name){
       plotLine(char1.name, colours[0], 13);
       plotLine(char2.name, colours[1], 10);
@@ -490,16 +491,53 @@ const plotLine = (character, color, r) => {
   });
 }
 
+let pointsMarker = []
+const plotMarkers = (character, v, color, radius) => {
+  pointsMarker.forEach(function(layer) {
+    map.removeLayer(layer);
+  });
+  d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/locations.json", (locations) => {
+    d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/master/data/characters-locations.json",(charactersLocations) => {
+      d3.json("https://raw.githubusercontent.com/rcrs3/game-of-thrones-visualizacao-2018-1/slider/data/characters-locations-epi.json",(charactersLocationsEpi) => {
+        let allLocations = [];
+        let passedLocations = {};
+        charactersLocationsEpi[character].locations.forEach((l, i) => {
+          if(l[0] == v){
+            let local = charactersLocations[character].locations[i][1] || charactersLocations[character].locations[i][0];
+            console.log(local);
+            if(local && (local in locations) && !(local in passedLocations)){
+              allLocations.push(locations[local]);
+              passedLocations[local] = true;
+            }
+          }
+        })
+        allLocations.forEach((l) => {
+          console.log(l);
+          console.log(l);
+          var circle = L.circleMarker(l.reverse(), {
+            radius: radius,
+            fillOpacity: 0.0,
+            color: color
+          }).addTo(map);
+          pointsMarker.push(circle);
+        })
+      });
+    });
+  });
+}
+
 const plotSlider = (c1, c2) => {
   if(slider !== null){
     slider.remove();
   }
   slider = L.control.slider(function(value) {
-      console.log(value);
+      plotMarkers(c1, value, '#000000', 18);
+      if(c1 != c2)
+        plotMarkers(c2, value, '#6b6b47', 20);
     }, {
       max: 7,
       min: 0,
-      value: 0,
+      value: 1,
       step: 1,
       size: '250px',
       orientation:'vertical',
