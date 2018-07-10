@@ -518,7 +518,7 @@ const plotMarkers = (character, v, color, radius) => {
             radius: radius,
             fillOpacity: 0.0,
             color: color
-          }).addTo(map);
+          }).bindTooltip(places[l]).addTo(map);
           pointsMarker.push(circle);
         })
       });
