@@ -1,7 +1,7 @@
 var epi
 var allCharacters = []
 corrMatrix = []
-charQuant = 50
+charQuant = 70
 
 var slider = null;
 
@@ -454,7 +454,7 @@ function showSceneTime(canvasVenn) {
 map = L.map('mapid', {minZoom: 3, maxZoom: 6}).setView([10, 35], 4);
 
 L.tileLayer(
-  'https://cartocdn-gusc-b.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@514b6ee6792b785b09469b931a2dd5b0:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
+  'https://cartocdn-gusc-a.global.ssl.fastly.net/ramirocartodb/api/v1/map/ramirocartodb@09b5df45@8b82e79f9d3e841b3722238a87d12db1:1529544224811/1,2,3,4,5,6,7,8,9,10,11/{z}/{x}/{y}.png',
   { crs: L.CRS.EPSG4326 }
 ).addTo(this.map);
 
